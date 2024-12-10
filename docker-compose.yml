@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  app:
+    image: rajyavardhan36/google-jib-image-example  # The image built by Jib
+    container_name: student_app-container
+    depends_on:
+      - mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/stuex2?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: appuser
+      SPRING_DATASOURCE_PASSWORD: apppassword
+      SPRING_APPLICATION_NAME: student-api
+    ports:
+      - "3456:3456"  # Map port 3456 of container to host
+    restart: on-failure  # Restart on failure
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-container
+    environment:
+      MYSQL_USER: appuser
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: stuex2
+      MYSQL_PASSWORD: apppassword
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
