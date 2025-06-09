@@ -21,7 +21,7 @@ public class StudentController {
     @GetMapping("test")
     public String test()
     {
-        return "Hello Student Controller";
+        return "Hello Student Controller API";
     }
     @PostMapping("add")
     public void postStudent(@RequestBody Student s)
