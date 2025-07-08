@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: student-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: student-app
+  template:
+    metadata:
+      labels:
+        app: student-app
+    spec:
+      containers:
+        - name: student-app-container
+          image: student-app:1.0
+          env:
+            - name: db.host
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: db_host
+            - name: db.port
+              value: "3306"
+            - name: db.name
+              valueFrom:
+                configMapKeyRef:
+                  name: mysql-configmap
+                  key: db_name
+            - name: db.username
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: db_username
+            - name: db.password
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secrets
+                  key: db_password
+          ports:
+            - containerPort: 3456 #The port that the container is running on the cluster
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: student-app-service
+spec:
+  selector:
+    app: student-app
+  type: NodePort
+  ports:
+    - port: 3456 #The port that service is running on the cluster
+      targetPort: 3456  #The port exposed by the service
